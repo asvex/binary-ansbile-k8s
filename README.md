@@ -68,4 +68,18 @@ ansible-playbook -i ~/hosts ~/k8s.yaml
   roles:
     - api
   tags: api
+  
+  - name: node
+  gather_facts: false
+  hosts: node
+  roles:
+    - node
+  tags: node
+
+- name: network
+  gather_facts: false
+  hosts: master[0]
+  roles:
+    - network
+  tags: network
   ```
