@@ -1,4 +1,4 @@
-# kubernetes v1.23.5 高可用集群自动部署 (offline)
+# kubernetes v1.23.5 高可用集群自动部署
 >### Ubuntu 系统
 
 ### 1、准备一台ansible操作服务器
@@ -29,6 +29,8 @@ ansible-playbook -i ~/hosts ~/k8s.yaml
   tags: certificate
   
 # create components
+> ### wget https://dl.k8s.io/v1.23.5/kubernetes-server-linux-amd64.tar.gz -C $dir/common/files
+> ### wget https://github.com/etcd-io/etcd/releases/download/v3.5.4/etcd-v3.5.4-linux-amd64.tar.gz -C $dir/common/files
 > ### tar *.tar.gz kube{ctl,-apiserver,-controller-manager,-scheduler} send to $dir/master/files/
 > ### tar *.tar.gz etcd{,ctl} send to $dir/etcd/files/
 > ### tar *.tar.gz kube{let,-proxy} send to $dir/node/files/
