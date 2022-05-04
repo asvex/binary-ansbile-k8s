@@ -1,0 +1,94 @@
+---
+- name: update resolve.conf
+  shell: |
+    mv /etc/resolv.conf  /etc/resolv.conf.bak
+    ln -s /run/systemd/resolve/resolv.conf /etc/
+    systemctl restart systemd-resolved.service && systemctl enable systemd-resolved.service
+  tags: pull
+
+- name: mkdir /etc/kubernetes/ssl
+  file:
+    dest: "{{ k8s_dir }}/ssl"
+    state: directory
+
+- name: copy token.csv
+  copy:
+    src: token.csv
+    dest: "{{ k8s_dir }}"
+
+- name: copy kube{ctl,-apiserver,-controller-manager,-scheduler}
+  copy:
+    src: "{{ item }}"
+    dest: "{{ bin_dir }}"
+  loop:
+    - kubectl
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+
+- name: copy certificate
+  copy:
+    src: "{{ item }}"
+    dest: "{{ k8s_dir }}/ssl"
+  loop:
+    - ca.pem
+    - ca-key.pem
+    - admin.pem
+    - admin-key.pem
+    - kube-apiserver.pem
+    - kube-apiserver-key.pem
+    - kube-controller-manager.pem
+    - kube-controller-manager-key.pem
+    - kube-scheduler.pem
+    - kube-scheduler-key.pem
+
+- name:  copy *.j2
+  template:
+    src: "{{ item }}"
+    dest: "{{ k8s_dir }}/{{ item.split('.')[:-1]|join('.') }}"
+  loop:
+    - admin.config.j2
+    - kube-apiserver.conf.j2
+    - kube-controller-manager.conf.j2
+    - kube-controller-manager.kubeconfig.j2
+    - kube-scheduler.conf.j2
+    - kube-scheduler.kubeconfig.j2
+
+- name: copy 
+  template:
+    src: "{{ item }}"
+    dest: "/usr/lib/systemd/system/{{ item.split('.')[:-1]|join('.') }}"
+  loop:
+    - kube-apiserver.service.j2
+    - kube-controller-manager.service.j2
+    - kube-scheduler.service.j2
+
+- name: start service
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  loop:
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+
+- name: mkdir .kube
+  file:
+    dest: /root/.kube
+    state: directory
+
+- name: copy admin.config to config
+  template:
+    src: admin.config.j2
+    dest: "/root/.kube/config"
+    mode: 0600
+
+- name: kubectl bash
+  lineinfile:
+    dest: /etc/profile
+    line: "{{ item }}"
+  loop:
+    - "source <(kubectl completion bash)"
+    - "export KUBECONFIG=/etc/kubernetes/admin.config"

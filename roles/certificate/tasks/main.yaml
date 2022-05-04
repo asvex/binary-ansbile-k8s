@@ -1,0 +1,43 @@
+---
+- name: mkdir work_dir
+  file:
+    dest: "{{ work_dir }}"
+    owner: root
+    group: root
+    mode: 0755
+    state: directory
+
+- name: copy cfssl
+  copy:
+    src: "{{ item }}"
+    dest: "{{ bin_dir }}"
+    owner: root
+    group: root
+    mode: 0755
+  loop:
+    - cfssl
+    - cfssljson
+    - cfssl-certinfo
+
+- name: copy *.json
+  template:
+    src: "{{ item }}"
+    dest: "{{ work_dir }}/{{ item.split('.')[:-1]|join('.') }}"
+  loop:
+    - ca-csr.json.j2
+    - ca-config.json.j2
+    - etcd-csr.json.j2
+    - admin-csr.json.j2
+    - kube-apiserver-csr.json.j2
+    - kube-controller-manager-csr.json.j2
+    - kube-scheduler-csr.json.j2
+    - kube-proxy-csr.json.j2
+
+- name: copy cert.sh
+  copy:
+    src: cert.sh
+    dest: "{{ work_dir }}"
+    mode: 0755
+
+- name: create certificate
+  shell: "cd {{ work_dir }} && /bin/bash cert.sh"

@@ -1,0 +1,14 @@
+---
+- name: copy *.yaml
+  template:
+    src: "{{ item }}"
+    dest: "{{ k8s_dir }}/{{ split.item('.')[:-1]|join('.') }}"
+  loop:
+    - calico.yaml.j2
+    - coredns.yaml.j2
+
+- name: kubectl apply -f calico.yaml coredns.yaml
+  shell: |
+    kubectl apply -f "{{ k8s_dir }}/calico.yaml"
+    kubectl apply -f "{{ k8s_dir }}/coredns.yaml"
+

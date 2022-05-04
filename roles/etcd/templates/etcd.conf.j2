@@ -1,0 +1,16 @@
+{% set local_ip = inventory_hostname %}
+KUBE_ETCD_OPTS="--name={{ etcd_name }} \
+ --data-dir=/var/lib/etcd/default.etcd \
+ --listen-peer-urls=https://{{ local_ip }}:2380 \
+ --listen-client-urls=https://{{ local_ip }}:2379,http://127.0.0.1:2379 \
+ --advertise-client-urls=https://{{ local_ip }}:2379 \
+ --initial-advertise-peer-urls=https://{{ local_ip }}:2380 \
+ --initial-cluster={% for host in groups['etcd'] %}{{ hostvars[host].etcd_name }}=https://{{ hostvars[host].inventory_hostname }}:2380{% if not loop.last %},{% endif %}{% endfor %} \
+ --cert-file={{ etcd_dir }}/ssl/etcd.pem \
+ --key-file={{ etcd_dir }}/ssl/etcd-key.pem \
+ --trusted-ca-file={{ etcd_dir }}/ssl/ca.pem \
+ --peer-cert-file={{ etcd_dir }}/ssl/etcd.pem \
+ --peer-key-file={{ etcd_dir }}/ssl/etcd-key.pem \
+ --peer-trusted-ca-file={{ etcd_dir }}/ssl/ca.pem \
+ --peer-client-cert-auth \
+ --client-cert-auth"

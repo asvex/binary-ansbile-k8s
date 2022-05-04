@@ -1,0 +1,18 @@
+---
+- name: copy *.yaml
+  copy:
+    src: "{{ item }}"
+    dest: "{{ k8s_dir }}"
+  loop:
+    - kube-apiserver-kubelet.yaml
+    - kubelet-bootstrap.yaml
+    - auto-approve-node.yaml
+    - cluster-admin.yaml
+
+- name: apply *.yaml
+  shell: |
+    kubectl apply -f {{ k8s_dir }}/kubelet-apiserver.yaml
+    kubectl apply -f {{ k8s_dir }}/kubelet-bootstrap.yaml
+    kubectl apply -f {{ k8s_dir }}/auto-approve-node.yaml
+    kubectl apply -f {{ k8s_dir }}/cluster-admin.yaml
+  ignore_errors: yes

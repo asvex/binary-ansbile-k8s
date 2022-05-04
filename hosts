@@ -1,0 +1,20 @@
+[operater]
+10.0.0.10 node_name=operater
+
+[master]
+10.0.0.20 node_name=k8s-master00
+10.0.0.21 node_name=k8s-master01
+10.0.0.22 node_name=k8s-master02
+
+[etcd]
+10.0.0.20 etcd_name=etcd-01
+10.0.0.21 etcd_name=etcd-02
+10.0.0.22 etcd_name=etcd-03
+
+[node]
+10.0.0.23 node_name=k8s-node01
+10.0.0.24 node_name=k8s-node02
+
+[k8s:children]
+master
+node

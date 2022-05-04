@@ -1,0 +1,40 @@
+ansible_dir: '/root/kubernetes'
+
+work_dir: '/root/work'
+bin_dir: '/usr/local/bin'
+
+etcd_dir: '/etc/etcd'
+k8s_dir: '/etc/kubernetes'
+
+service_cidr: '10.96.0.0/16'
+pod_cidr: '10.244.0.0/16'
+cluster_dns: '10.96.0.2'
+service_node_port_range: '30000-50000'
+cluster_domain: 'cluster.local'
+
+vip: '10.0.0.25'
+nic: 'eth0'
+
+cert_hosts:
+  k8s:
+    - 10.96.0.1
+    - 10.0.0.20
+    - 10.0.0.21
+    - 10.0.0.22
+    - 10.0.0.23
+    - 10.0.0.24
+    - 10.0.0.25
+  master:
+    - 10.0.0.21
+    - 10.0.0.22
+    - 10.0.0.23
+    - 10.0.0.25
+  node:
+    - 10.0.0.23
+    - 10.0.0.24
+  etcd:
+    - 10.0.0.20
+    - 10.0.0.21
+    - 10.0.0.22
+  lb:
+    - 10.0.0.25

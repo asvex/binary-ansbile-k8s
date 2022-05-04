@@ -1,0 +1,50 @@
+---
+- name: create cert
+  gather_facts: false
+  hosts: operater
+  roles:
+    - certificate
+  tags: certificate
+
+- name: create token.csv kube{ctl,let,-apiserver,-controller-manager,-scheduler,-proxy}
+  gather_facts: false
+  hosts: operater
+  roles:
+    - common
+  tags: common
+
+- name: etcd service
+  gather_facts: false
+  hosts: etcd
+  roles:
+    - etcd
+  tags: etcd
+
+- name: master
+  gather_facts: false
+  hosts: master
+  roles:
+    - master
+  tags: master
+
+- name: kubernetes-kubelet api
+  gather_facts: false
+  hosts: master[0]
+  roles:
+    - api
+  tags: api
+
+- name: node
+  gather_facts: false
+  hosts: node
+  roles:
+    - node
+  tags: node
+
+- name: network
+  gather_facts: false
+  hosts: master[0]
+  roles:
+    - network
+  tags: network
+  

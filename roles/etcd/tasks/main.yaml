@@ -1,0 +1,54 @@
+---
+- name: create etcd_dir
+  file:
+    dest: "{{ etcd_dir }}/ssl"
+    state: directory
+
+- name: copy pem
+  copy:
+    src: "{{ item }}"
+    dest: "{{ etcd_dir }}/ssl"
+  loop:
+    - ca.pem
+    - ca-key.pem
+    - etcd.pem
+    - etcd-key.pem
+
+- name: copy etcd
+  copy:
+    src: "{{ item }}"
+    dest: "{{ bin_dir }}"
+    group: root
+    owner: root
+    mode: 0755
+  loop:
+    - etcd
+    - etcdctl
+
+- name: copy etcd.conf
+  template:
+    src: etcd.conf.j2
+    dest: "{{ etcd_dir }}/etcd.conf"
+
+- name: copy etcd.service
+  template:
+    src: etcd.service.j2
+    dest: "/usr/lib/systemd/system/etcd.service"
+
+- name: enable etcd
+  systemd:
+    name: etcd
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+- name: copy etcd.sh
+  template:
+    src: etcd.sh.j2
+    dest: "{{ etcd_dir }}/etcd.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: sh etcd.sh
+  shell: "/bin/bash {{ etcd_dir }}/etcd.sh"
