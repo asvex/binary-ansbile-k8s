@@ -72,7 +72,7 @@
     for i in cni node kube-controllers pod2daemon-flexvol
       do
         ctr -n k8s.io i pull registry.cn-shanghai.aliyuncs.com/asvex/$i:v3.22.2
-        ctr -n k8s.io i tag registry.cn-shanghai.aliyuncs.com/asvex/$i:v3.22.2 docker.io/calico/$i.v3.22.2
+        ctr -n k8s.io i tag registry.cn-shanghai.aliyuncs.com/asvex/$i:v3.22.2 docker.io/calico/$i:v3.22.2
         ctr -n k8s.io i rm registry.cn-shanghai.aliyuncs.com/asvex/$i:v3.22.2
     done
     ctr -n k8s.io i pull registry.aliyuncs.com/google_containers/coredns:1.8.7
